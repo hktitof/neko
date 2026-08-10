@@ -44,6 +44,19 @@ func (provider *MemberProviderCtx) Authenticate(username string, password string
 	// id will be also username
 	id := username
 
+	if id == "" {
+		entries, err := provider.deserialize()
+		if err != nil {
+			return "", types.MemberProfile{}, err
+		}
+		for memberId, entry := range entries {
+			if entry.Password == provider.hash(password) {
+				return memberId, entry.Profile, nil
+			}
+		}
+		return "", types.MemberProfile{}, types.ErrMemberDoesNotExist
+	}
+
 	entry, err := provider.getEntry(id)
 	if err != nil {
 		return "", types.MemberProfile{}, err

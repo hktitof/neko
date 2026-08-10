@@ -1,6 +1,6 @@
 services:
   neko:
-    image: "ghcr.io/m1k1o/neko/firefox:latest"
+    image: "ghcr.io/m1k1o/neko/chromium:latest"
     restart: "unless-stopped"
     shm_size: "2gb"
     ports:
@@ -13,4 +13,10 @@ services:
       NEKO_WEBRTC_EPR: 52000-52100
       NEKO_WEBRTC_ICELITE: 1
       # See: https://neko.m1k1o.net/docs/v3/configuration/webrtc#ip
-      # NEKO_NAT1TO1: <IP_ADDRESS>
+      NEKO_NAT1TO1: "127.0.0.1"
+      NEKO_FILETRANSFER_ENABLED: "true"
+      NEKO_FILETRANSFER_DIR: "/home/neko/Downloads"
+      NEKO_FILETRANSFER_USER_DOWNLOAD: "true"
+      NEKO_FILETRANSFER_USER_UPLOAD: "true"
+      NEKO_FILETRANSFER_USER_DELETE: "true"
+      NEKO_SESSION_IMPLICIT_HOSTING: "true"

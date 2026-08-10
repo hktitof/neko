@@ -34,6 +34,15 @@ func (provider *MemberProviderCtx) Authenticate(username string, password string
 	// id will be also username
 	id := username
 
+	if id == "" {
+		for memberId, entry := range provider.entries {
+			if entry.CheckPassword(password) {
+				return memberId, entry.profile, nil
+			}
+		}
+		return "", types.MemberProfile{}, types.ErrMemberDoesNotExist
+	}
+
 	entry, ok := provider.entries[id]
 	if !ok {
 		return "", types.MemberProfile{}, types.ErrMemberDoesNotExist

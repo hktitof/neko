@@ -1,7 +1,6 @@
 package filetransfer
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -46,24 +45,7 @@ type Manager struct {
 }
 
 func (m *Manager) isEnabledForSession(session types.Session) (bool, error) {
-	settings := Settings{
-		Enabled: true, // defaults to true
-	}
-	err := m.sessions.Settings().Plugins.Unmarshal(PluginName, &settings)
-	if err != nil && !errors.Is(err, types.ErrPluginSettingsNotFound) {
-		return false, fmt.Errorf("unable to unmarshal %s plugin settings from global settings: %w", PluginName, err)
-	}
-
-	profile := Settings{
-		Enabled: true, // defaults to true
-	}
-
-	err = session.Profile().Plugins.Unmarshal(PluginName, &profile)
-	if err != nil && !errors.Is(err, types.ErrPluginSettingsNotFound) {
-		return false, fmt.Errorf("unable to unmarshal %s plugin settings from profile: %w", PluginName, err)
-	}
-
-	return m.config.Enabled && (settings.Enabled || session.Profile().IsAdmin) && profile.Enabled, nil
+	return m.config.Enabled, nil
 }
 
 func (m *Manager) refresh() (error, bool) {
