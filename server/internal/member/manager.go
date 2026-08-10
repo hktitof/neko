@@ -147,11 +147,7 @@ func (manager *MemberManagerCtx) Login(username string, password string) (types.
 
 	session, ok := manager.sessions.Get(id)
 	if ok {
-		if session.State().IsConnected {
-			return session, session.Token(), nil
-		}
-
-		// TODO: Replace session.
+		// Replace session on login.
 		if err := manager.sessions.Delete(id); err != nil {
 			return nil, "", err
 		}
