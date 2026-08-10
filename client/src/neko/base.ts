@@ -257,9 +257,14 @@ export abstract class BaseClient extends EventEmitter<BaseEvents> {
       return
     }
 
-    if (this.peerConnected) {
-      this.emit('warn', `attempting to create peer while connected`)
-      return
+    if (this._peer) {
+      this.emit('warn', `closing existing peer before creating new peer`)
+      try {
+        this._peer.close()
+      } catch (err) {
+        // ignore
+      }
+      this._peer = undefined
     }
 
     if (lite !== true) {
