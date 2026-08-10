@@ -37,6 +37,10 @@ func (session *SessionCtx) ID() string {
 	return session.id
 }
 
+func (session *SessionCtx) Token() string {
+	return session.token
+}
+
 func (session *SessionCtx) Profile() types.MemberProfile {
 	return session.profile
 }

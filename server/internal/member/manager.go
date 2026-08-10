@@ -148,7 +148,7 @@ func (manager *MemberManagerCtx) Login(username string, password string) (types.
 	session, ok := manager.sessions.Get(id)
 	if ok {
 		if session.State().IsConnected {
-			return nil, "", types.ErrSessionAlreadyConnected
+			return session, session.Token(), nil
 		}
 
 		// TODO: Replace session.

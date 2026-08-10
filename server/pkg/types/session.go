@@ -65,6 +65,7 @@ type Stats struct {
 
 type Session interface {
 	ID() string
+	Token() string
 	Profile() MemberProfile
 	State() SessionState
 	IsHost() bool

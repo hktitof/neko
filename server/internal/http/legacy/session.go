@@ -200,12 +200,6 @@ func (s *session) create(username, password string) error {
 func (s *session) destroy() {
 	defer s.client.CloseIdleConnections()
 
-	// logout session
-	err := s.apiReq(http.MethodPost, "/api/logout", nil, nil)
-	if err != nil {
-		s.logger.Error().Err(err).Msg("failed to logout")
-	}
-
 	// remove session id from ip map
 	delete(s.h.sessionIPs, s.id)
 }
