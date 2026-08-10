@@ -66,7 +66,7 @@ func (h *RoomHandler) Route(r types.Router) {
 		r.Post("/stop", h.broadcastStop)
 	})
 
-	r.With(auth.CanAccessClipboardOnly).With(auth.HostsOnly).Route("/clipboard", func(r types.Router) {
+	r.With(auth.CanAccessClipboardOnly).Route("/clipboard", func(r types.Router) {
 		r.Get("/", h.clipboardGetText)
 		r.Post("/", h.clipboardSetText)
 		r.Get("/image.png", h.clipboardGetImage)

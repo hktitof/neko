@@ -159,11 +159,6 @@ func (manager *WebSocketManagerCtx) Start() {
 	})
 
 	manager.desktop.OnClipboardUpdated(func() {
-		host, hasHost := manager.sessions.GetHost()
-		if !hasHost || !host.Profile().CanAccessClipboard {
-			return
-		}
-
 		manager.logger.Info().Msg("sync clipboard")
 
 		data, err := manager.desktop.ClipboardGetText()
@@ -172,12 +167,17 @@ func (manager *WebSocketManagerCtx) Start() {
 			return
 		}
 
-		host.Send(
-			event.CLIPBOARD_UPDATED,
-			message.ClipboardData{
-				Text: data.Text,
-				// TODO: Send HTML?
-			})
+		for _, session := range manager.sessions.List() {
+			if session.State().IsConnected && session.Profile().CanAccessClipboard {
+				session.Send(
+					event.CLIPBOARD_UPDATED,
+					message.ClipboardData{
+						Text: data.Text,
+						// TODO: Send HTML?
+					},
+				)
+			}
+		}
 	})
 
 	if manager.desktop.IsFileChooserDialogEnabled() {
