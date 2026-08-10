@@ -144,12 +144,12 @@ func (session *SessionCtx) ConnectWebSocketPeer(websocketPeer types.WebSocketPee
 		session.manager.lastUserLeftAt.Store((*time.Time)(nil))
 	}
 
-	session.manager.emmiter.Emit("connected", session)
-
-	// if there is a previous peer, destroy it
+	// if there is a previous peer, destroy it first
 	if websocketPeer != nil {
 		websocketPeer.Destroy("connection replaced")
 	}
+
+	session.manager.emmiter.Emit("connected", session)
 }
 
 // Disconnect WebSocket peer sets current peer to nil and emits disconnected event. It also
