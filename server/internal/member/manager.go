@@ -145,7 +145,7 @@ func (manager *MemberManagerCtx) Login(username string, password string) (types.
 		return nil, "", types.ErrSessionLoginsLocked
 	}
 
-	session, ok := manager.sessions.Get(id)
+	_, ok := manager.sessions.Get(id)
 	if ok {
 		// Replace session on login.
 		if err := manager.sessions.Delete(id); err != nil {
