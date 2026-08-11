@@ -93,6 +93,8 @@ export const actions = actionTree(
     },
 
     login(store, { displayname, password }: { displayname: string; password: string }) {
+      displayname = (displayname || '').trim()
+      password = (password || '').trim()
       accessor.setLogin({ displayname, password })
       $client.login(password, displayname)
     },

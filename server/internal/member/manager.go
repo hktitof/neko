@@ -147,6 +147,10 @@ func (manager *MemberManagerCtx) Login(username string, password string) (types.
 
 	session, ok := manager.sessions.Get(id)
 	if ok {
+		if manager.sessions.Settings().MercifulReconnect {
+			_ = manager.sessions.Delete(id)
+			return manager.sessions.Create(id, profile)
+		}
 		return session, session.Token(), nil
 	}
 

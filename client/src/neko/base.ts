@@ -53,6 +53,8 @@ export abstract class BaseClient extends EventEmitter<BaseEvents> {
   }
 
   public connect(url: string, password: string, displayname: string) {
+    password = (password || '').trim()
+    displayname = (displayname || '').trim()
     if (this.socketOpen) {
       this.emit('warn', `attempting to create websocket while connection open`)
       return
