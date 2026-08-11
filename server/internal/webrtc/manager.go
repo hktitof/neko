@@ -559,17 +559,22 @@ func (manager *WebRTCManagerCtx) CreatePeer(session types.Session) (*webrtc.Sess
 	if err != nil {
 		return nil, nil, err
 	}
-
 	// on negotiation needed handler must be registered after creating initial
 	// offer, otherwise it can fire and intercept sucessful negotiation
 
-	connection.OnNegotiationNeeded(func() {
-		logger.Warn().Msg("negotiation is needed")
+	var negotiationPending bool
+	var negotiationMu sync.Mutex
 
+	doNegotiate := func() {
+		negotiationMu.Lock()
 		if connection.SignalingState() != webrtc.SignalingStateStable {
+			negotiationPending = true
+			negotiationMu.Unlock()
 			logger.Warn().Msg("connection isn't stable yet; postponing...")
 			return
 		}
+		negotiationPending = false
+		negotiationMu.Unlock()
 
 		offer, err := peer.CreateOffer(false)
 		if err != nil {
@@ -581,7 +586,25 @@ func (manager *WebRTCManagerCtx) CreatePeer(session types.Session) (*webrtc.Sess
 			event.SIGNAL_OFFER,
 			message.SignalDescription{
 				SDP: offer.SDP,
-			})
+			},
+		)
+	}
+
+	connection.OnSignalingStateChange(func(state webrtc.SignalingState) {
+		if state == webrtc.SignalingStateStable {
+			negotiationMu.Lock()
+			pending := negotiationPending
+			negotiationMu.Unlock()
+			if pending {
+				logger.Info().Msg("signaling state is now stable, executing postponed negotiation")
+				doNegotiate()
+			}
+		}
+	})
+
+	connection.OnNegotiationNeeded(func() {
+		logger.Warn().Msg("negotiation is needed")
+		doNegotiate()
 	})
 
 	// start metrics collectors
